@@ -1,4 +1,12 @@
-#from turtle import Turtle
+"""PyFile.py
+Author: Joseph Lay
+Version: 0.0.2 7/14/2024
+
+This file manager uses tkinter for its gui. So far, it can display
+the contents of a folder as buttons. However, these do nothing useful yet.
+"""
+
+
 import os
 import tkinter as tk
 """def display_dir():
@@ -34,7 +42,7 @@ def window():
     frame.grid()
 
     global greeting
-    greeting = tk.Label(text="Hello Phil!")
+    greeting = tk.Label(text="PyFile!")
     greeting.grid()
 
     # Make a button with the first file name.
@@ -49,7 +57,7 @@ def window():
     root.mainloop()
 
 def clicked():
-    return greeting.configure(text="Clicked")
+    return greeting.configure(text="Has Buttons!")
 
 def cmd(cmd = None):
     """

@@ -9,18 +9,6 @@ the contents of a folder as buttons. However, these do nothing useful yet.
 
 import os
 import tkinter as tk
-"""def display_dir():
-    #make_grid
-    pass
-
-def draw_grid(t, x, y, length):
-     t.up()
-     t.goto(x,y)
-     t.setheading(270)
-     t.down()
-     for count in range(4):
-          t.forward(length)
-          t.left(90)"""
 
 def main():
     window()
@@ -33,7 +21,7 @@ def main():
 def window():
     # Make the root window
     root = tk.Tk()
-    root.title("TITLE!")
+    root.title("PyFile")
     root.geometry("400x400")
 
     
@@ -50,14 +38,26 @@ def window():
     x = cmd("ls")
     print(x)
     button = []
+    # Ready some icons.
+    fileIco = tk.PhotoImage(file="doc16x16.gif")
+    foldIco = tk.PhotoImage(file="fold16x16.png")
     # As many files there are, make that many buttons.
     for index in range(len(x)):
-        button.append(tk.Button(frame, text=x[index], command=clicked))
+        button.append(tk.Button(frame, text=x[index], command=clicked, image=fileIco, compound="top"))
+        if os.path.isdir(x[index]):
+            button[index].configure(text=x[index], command=clickFold, image=foldIco)
         button[index].grid()
+    fake = fileBtn("FakeFile")
+    fake.btn.grid()
     root.mainloop()
 
 def clicked():
     return greeting.configure(text="Has Buttons!")
+
+
+def clickFold():
+        
+        return greeting.configure(text="Has Folders!")
 
 def cmd(cmd = None):
     """

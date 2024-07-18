@@ -55,21 +55,24 @@ def window():
 
 def btns(window):
     global button
-    x = cmd("ls")
+    x = os.listdir()
     print(x)
     if "button" in globals():
-        for index in range(len(button)):
+        """for index in range(len(button)):
             print("DEATH")
-            button[index].destroy()
+            button[index].destroy()"""
+        for widget in root.winfo_children():
+                widget.destroy()
+                button.clear
 
-    else:
-        button = list(range(len(x)))
+    button = list(range(len(x)))
 
     for index in range(len(x)):
         if os.path.isdir(x[index]):
             button[index] = foldBtn(name=x[index])
         else:
             button[index] = fileBtn(name=x[index])
+    button.append(foldBtn(name="../"))
     
 
 def clicked():
@@ -95,28 +98,6 @@ class foldBtn(tk.Button):
         self = tk.Button(text=name, image=foldIco, compound="top", command=lambda: clickFold(name))
         self.grid()
 
-
-
-def cmd(cmd = None):
-    """
-    Translate user commands
-    cmd -- a string. Optional. What command to use."""
-    if cmd == None:
-        cmd = input("CMD. ")
-        args = cmd.split()
-        cmd = args[0]
-        args = args[1:]
-        print(cmd)
-    cmd.lower()
-    if cmd == "up":
-        os.chdir("..")
-    
-    elif cmd == "ls":
-        return os.listdir()
-    elif cmd == "cd":
-        os.chdir(args[0])
-        print(os.listdir)
-     
 
 if __name__ == "__main__":
     main()

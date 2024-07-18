@@ -9,6 +9,7 @@ the contents of a folder as buttons. However, these do nothing useful yet.
 
 import os
 import tkinter as tk
+import tkinter.ttk as ttk
 
 def main():
     window()
@@ -37,18 +38,23 @@ def window():
 
     x = cmd("ls")
     print(x)
-    button = []
+    button = list(range(len(x)))
     # Ready some icons.
+    global fileIco
+    global foldIco
     fileIco = tk.PhotoImage(file="doc16x16.gif")
     foldIco = tk.PhotoImage(file="fold16x16.png")
     # As many files there are, make that many buttons.
-    for index in range(len(x)):
+    """for index in range(len(x)):
         button.append(tk.Button(frame, text=x[index], command=clicked, image=fileIco, compound="top"))
         if os.path.isdir(x[index]):
             button[index].configure(text=x[index], command=clickFold, image=foldIco)
-        button[index].grid()
-    fake = fileBtn("FakeFile")
-    fake.btn.grid()
+        button[index].grid()"""
+    for index in range(len(x)):
+        if os.path.isdir(x[index]):
+            button[index] = foldBtn(name=x[index])
+        else:
+            button[index] = fileBtn(name=x[index])
     root.mainloop()
 
 def clicked():
@@ -58,6 +64,22 @@ def clicked():
 def clickFold():
         
         return greeting.configure(text="Has Folders!")
+
+class fileBtn(tk.Button):
+    def __init__(self, name):
+        global fileIco
+        self.name = name
+        self = ttk.Button(text=name, command=clicked, image=fileIco, compound="top")
+        self.grid()
+
+class foldBtn(tk.Button):
+    def __init__(self, name):
+        global foldIco
+        self.name = name
+        self = ttk.Button(text=name, command=clickFold, image=foldIco, compound="top")
+        self.grid()
+
+
 
 def cmd(cmd = None):
     """

@@ -21,9 +21,10 @@ def main():
 
 def window():
     # Make the root window
+    global root
     root = tk.Tk()
     root.title("PyFile")
-    root.geometry("400x400")
+    root.geometry("400x800")
 
     
 
@@ -36,47 +37,62 @@ def window():
 
     # Make a button with the first file name.
 
-    x = cmd("ls")
-    print(x)
-    button = list(range(len(x)))
+    
     # Ready some icons.
     global fileIco
     global foldIco
     fileIco = tk.PhotoImage(file="doc16x16.gif")
     foldIco = tk.PhotoImage(file="fold16x16.png")
+    btns(root)
     # As many files there are, make that many buttons.
     """for index in range(len(x)):
         button.append(tk.Button(frame, text=x[index], command=clicked, image=fileIco, compound="top"))
         if os.path.isdir(x[index]):
             button[index].configure(text=x[index], command=clickFold, image=foldIco)
         button[index].grid()"""
+    root.mainloop()
+
+
+def btns(window):
+    global button
+    x = cmd("ls")
+    print(x)
+    if "button" in globals():
+        for index in range(len(button)):
+            print("DEATH")
+            button[index].destroy()
+
+    else:
+        button = list(range(len(x)))
+
     for index in range(len(x)):
         if os.path.isdir(x[index]):
             button[index] = foldBtn(name=x[index])
         else:
             button[index] = fileBtn(name=x[index])
-    root.mainloop()
+    
 
 def clicked():
     return greeting.configure(text="Has Buttons!")
 
 
-def clickFold():
-        
-        return greeting.configure(text="Has Folders!")
+def clickFold(folder):
+        os.chdir("./"+folder)
+        btns(root)
+        return
 
 class fileBtn(tk.Button):
     def __init__(self, name):
         global fileIco
         self.name = name
-        self = ttk.Button(text=name, command=clicked, image=fileIco, compound="top")
+        self = tk.Button(text=name, command=clicked, image=fileIco, compound="top")
         self.grid()
 
 class foldBtn(tk.Button):
     def __init__(self, name):
         global foldIco
         self.name = name
-        self = ttk.Button(text=name, command=clickFold, image=foldIco, compound="top")
+        self = tk.Button(text=name, image=foldIco, compound="top", command=lambda: clickFold(name))
         self.grid()
 
 

@@ -1,22 +1,20 @@
 """PyFile.py
 Author: Joseph Lay
-Version: 0.0.2 7/14/2024
+Version: 0.1.0 7/18/2024
 
 This file manager uses tkinter for its gui. So far, it can display
-the contents of a folder as buttons. However, these do nothing useful yet.
+the contents of a folder as buttons, and it can move up and down the directory tree.
+The folder labelled "Move Up" does not exist and is only for moving up the directory tree.
+However, the file buttons do nothing useful yet.
 """
 
 
 import os
 import tkinter as tk
-import tkinter.ttk as ttk
 
 def main():
+    # Make the main window.
     window()
-    #print(os.getcwd())
-    #cmd("ls")
-    #cmd()
-    #print(os.getcwd())
     
 
 def window():
@@ -26,65 +24,81 @@ def window():
     root.title("PyFile")
     root.geometry("400x800")
 
-    
-
+    # Make a frame for display purposes.
+    # Needs implementation still
     frame = tk.Frame(root)
     frame.grid()
 
+    # Make a one-time greeting
     global greeting
-    greeting = tk.Label(text="PyFile!")
+    greeting = tk.Label(text="Welcom to PyFile!")
     greeting.grid()
-
-    # Make a button with the first file name.
-
     
     # Ready some icons.
     global fileIco
     global foldIco
     fileIco = tk.PhotoImage(file="doc16x16.gif")
     foldIco = tk.PhotoImage(file="fold16x16.png")
-    btns(root)
-    # As many files there are, make that many buttons.
-    """for index in range(len(x)):
-        button.append(tk.Button(frame, text=x[index], command=clicked, image=fileIco, compound="top"))
-        if os.path.isdir(x[index]):
-            button[index].configure(text=x[index], command=clickFold, image=foldIco)
-        button[index].grid()"""
+
+    # Display some buttons representing the files.
+    btns()
+
     root.mainloop()
 
+def Window2():
+    # Make the helpWin window
+    helpWin = tk.Toplevel(root)
+    helpWin.title("PyFile Helper")
+    helpWin.geometry("200x200")
 
-def btns(window):
-    global button
-    x = os.listdir()
-    print(x)
-    if "button" in globals():
-        """for index in range(len(button)):
-            print("DEATH")
-            button[index].destroy()"""
-        for widget in root.winfo_children():
-                widget.destroy()
-                button.clear
 
-    button = list(range(len(x)))
-
-    for index in range(len(x)):
-        if os.path.isdir(x[index]):
-            button[index] = foldBtn(name=x[index])
-        else:
-            button[index] = fileBtn(name=x[index])
-    button.append(foldBtn(name="../"))
+    lbl = tk.Label(text="PyFile!")
+    lbl.pack()
     
 
+
+def btns():
+    """Create buttons for each file and subfolder in the working directory."""
+    global buttons
+    files = os.listdir()
+    print(files)
+    # Check if this function has run before.
+    if "buttons" in globals():
+        # If it has run, delete all previous widgets.
+        for widget in root.winfo_children():
+                widget.destroy()
+                buttons.clear
+
+    # Create a new list for the buttons
+    buttons = list(range(len(files)))
+
+    # Start by making a button to move to the parent folder.
+    buttons.insert(0, foldBtn(name="../"))
+    # Create a button for all the files and folders
+    for index in range(len(files)):
+        # Start with the folders so that theey are on top.
+        if os.path.isdir(files[index]):
+            buttons[index] = foldBtn(name=files[index])
+
+    for index in range(len(files)):
+        # Afterwards, make the file buttons.
+        if os.path.isfile(files[index]):
+            buttons[index] = fileBtn(name=files[index])
+                
+
 def clicked():
-    return greeting.configure(text="Has Buttons!")
+     """Respond to a click on a file."""
+     Window2()
 
 
 def clickFold(folder):
+        """Respond to a click on a folder"""
         os.chdir("./"+folder)
-        btns(root)
+        btns()
         return
 
 class fileBtn(tk.Button):
+    """Define a new button for a file."""
     def __init__(self, name):
         global fileIco
         self.name = name
@@ -92,10 +106,17 @@ class fileBtn(tk.Button):
         self.grid()
 
 class foldBtn(tk.Button):
+    """Define a new button for a folder."""
     def __init__(self, name):
         global foldIco
-        self.name = name
-        self = tk.Button(text=name, image=foldIco, compound="top", command=lambda: clickFold(name))
+        # If the folder is the one to move up, label it "Move up"
+        if name == "../":
+             self.name = "Move up"
+        # Otherwise, give it the name of the folder it corresponds to.
+        else:
+            self.name = name
+        # Define the button's atrributes
+        self = tk.Button(text=self.name, image=foldIco, compound="top", command=lambda: clickFold(name))
         self.grid()
 
 

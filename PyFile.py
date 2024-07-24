@@ -11,6 +11,7 @@ However, the file buttons do nothing useful yet.
 
 import os
 import tkinter as tk
+import tkinter.ttk as ttk
 
 def main():
     # Make the main window.
@@ -22,17 +23,30 @@ def window():
     global root
     root = tk.Tk()
     root.title("PyFile")
-    root.geometry("400x800")
+    root.maxsize()
 
     # Make a frame for display purposes.
     # Needs implementation still
-    frame = tk.Frame(root)
-    frame.grid()
+    
+    global outer_frame
+    global cTableContainer
+    global fTable
+    global sbHorizontalScrollBar
+    global sbVerticalScrollBar
+    outer_frame = tk.Frame(root)
+    outer_frame.grid()
+
+    cTableContainer = tk.Canvas(outer_frame)
+    fTable = tk.Frame(cTableContainer)
+    sbHorizontalScrollBar = tk.Scrollbar(outer_frame, orient="horizontal")
+    sbVerticalScrollBar = ttk.Scrollbar(outer_frame, orient="vertical")
+    createScrollableContainer()
+    
 
     # Make a one-time greeting
-    global greeting
-    greeting = tk.Label(text="Welcom to PyFile!")
-    greeting.grid()
+    """global greeting
+    greeting = tk.Label(fTable,text="Welcom to PyFile!")
+    greeting.grid()"""
     
     # Ready some icons.
     global fileIco
@@ -43,31 +57,51 @@ def window():
     # Display some buttons representing the files.
     btns()
 
+    
+    
     root.mainloop()
 
-def Window2():
-    # Make the helpWin window
-    helpWin = tk.Toplevel(root)
-    helpWin.title("PyFile Helper")
-    helpWin.geometry("200x200")
+def createScrollableContainer():
+    global cTableContainer
+    global fTable
+    global sbHorizontalScrollBar
+    global sbVerticalScrollBar
+    cTableContainer.configure(
+        xscrollcommand=sbHorizontalScrollBar.set,
+        yscrollcommand=sbVerticalScrollBar.set,
+        highlightthickness=0,
+        )
+    print(outer_frame.winfo_height())
+    sbHorizontalScrollBar.configure(command=cTableContainer.xview)
+    sbVerticalScrollBar.configure(command=cTableContainer.yview)
 
-
-    lbl = tk.Label(text="PyFile!")
-    lbl.pack()
+    sbHorizontalScrollBar.pack(fill="x", side="bottom", expand=False)
+    sbVerticalScrollBar.pack(fill="y", side="right", expand=False)
+    cTableContainer.pack(fill="both", side="left", expand=True)
+    cTableContainer.create_window(0, 0, window=fTable, anchor="nw")
     
 
+def updateScrollRegion():
+    cTableContainer.update_idletasks()
+    cTableContainer.config(scrollregion = (0,0,fTable.winfo_width(),fTable.winfo_height()))
+    print(outer_frame.winfo_height())
+    print(outer_frame.winfo_width())
+     
 
 def btns():
-    """Create buttons for each file and subfolder in the working directory."""
     global buttons
-    files = os.listdir()
-    print(files)
+    """Create buttons for each file and subfolder in the working directory."""
     # Check if this function has run before.
     if "buttons" in globals():
         # If it has run, delete all previous widgets.
-        for widget in root.winfo_children():
+        for widget in fTable.winfo_children():
                 widget.destroy()
                 buttons.clear
+
+    files = os.listdir()
+    print(files)
+    
+        
 
     # Create a new list for the buttons
     buttons = list(range(len(files)))
@@ -84,11 +118,23 @@ def btns():
         # Afterwards, make the file buttons.
         if os.path.isfile(files[index]):
             buttons[index] = fileBtn(name=files[index])
-                
+    updateScrollRegion()
+    
 
-def clicked():
+def properties_window(name):
+    # Make the helpWin window
+    helpWin = tk.Toplevel(root)
+    helpWin.title("PyFile Helper")
+    helpWin.geometry("200x200")
+
+
+    lbl = tk.Label(helpWin, text="File name: "+name)
+    lbl.grid()
+
+
+def clicked(name):
      """Respond to a click on a file."""
-     Window2()
+     properties_window(name)
 
 
 def clickFold(folder):
@@ -102,8 +148,8 @@ class fileBtn(tk.Button):
     def __init__(self, name):
         global fileIco
         self.name = name
-        self = tk.Button(text=name, command=clicked, image=fileIco, compound="top")
-        self.grid()
+        self = tk.Button(fTable, text=name, command=lambda:clicked(name), image=fileIco, compound="top")
+        self.pack()
 
 class foldBtn(tk.Button):
     """Define a new button for a folder."""
@@ -116,8 +162,8 @@ class foldBtn(tk.Button):
         else:
             self.name = name
         # Define the button's atrributes
-        self = tk.Button(text=self.name, image=foldIco, compound="top", command=lambda: clickFold(name))
-        self.grid()
+        self = tk.Button(fTable, text=self.name, image=foldIco, compound="top", command=lambda: clickFold(name))
+        self.pack()
 
 
 if __name__ == "__main__":
